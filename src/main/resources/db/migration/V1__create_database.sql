@@ -1,9 +1,9 @@
 CREATE TABLE users (
-                        "id" int   NOT NULL
+                        "id" serial   NOT NULL
                                 CONSTRAINT users_pk PRIMARY KEY ,
-                        "login" varchar(16)   NOT NULL
-                                CONSTRAINT users_login_key UNIQUE ,
-                        "password" varchar(16)   NOT NULL,
+                        "username" varchar(16)   NOT NULL
+                                CONSTRAINT users_username_key UNIQUE ,
+                        "password" varchar(100)   NOT NULL,
                         "fio" varchar(64)   NOT NULL
 
 );

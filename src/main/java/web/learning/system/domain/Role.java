@@ -2,6 +2,7 @@ package web.learning.system.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.Set;
 @Table(name = "role")
 @Entity
 @Data
+@EqualsAndHashCode(exclude = {"users"})
 public class Role {
 
     @Id
