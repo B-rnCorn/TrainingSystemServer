@@ -12,7 +12,7 @@ public interface UserService {
 
     JwtResponseDto login(LoginDto loginDto);
 
-    MessageResponseDto registration(RegistrationDto registrationDto) throws ObjectNotFoundException;
+    String registration(RegistrationDto registrationDto) throws ObjectNotFoundException;
 
     List<User> findAll();
 

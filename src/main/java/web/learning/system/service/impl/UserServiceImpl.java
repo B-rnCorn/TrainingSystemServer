@@ -72,9 +72,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MessageResponseDto registration(RegistrationDto registrationDto) throws ObjectNotFoundException {
+    public String registration(RegistrationDto registrationDto) throws ObjectNotFoundException {
         if (userRepository.existsByUsername(registrationDto.getUsername()))
-            return new MessageResponseDto("Ошибка: Данный пользователь уже зарегистрирован!");
+            return "Ошибка: Данный пользователь уже зарегистрирован!";
 
         User user = new User(registrationDto.getUsername(),
                 passwordEncoder.encode(registrationDto.getPassword()),
@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setRoles(roles);
         userRepository.save(user);
-        return new MessageResponseDto("Пользователь " + user.getUsername() + " успешно зарегистрирован!");
+        return "Пользователь " + user.getUsername() + " успешно зарегистрирован!";
     }
 
     @Override
