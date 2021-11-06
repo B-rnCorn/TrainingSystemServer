@@ -1,12 +1,14 @@
 package web.learning.system.service.impl;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import web.learning.system.config.jwt.JwtUtils;
@@ -14,7 +16,7 @@ import web.learning.system.domain.ERole;
 import web.learning.system.domain.Role;
 import web.learning.system.domain.User;
 import web.learning.system.dto.*;
-import web.learning.system.exception.ObjectNotFoundException;
+import web.learning.system.exception.GlobalException;
 import web.learning.system.mapper.UserMapper;
 import web.learning.system.repository.RoleRepository;
 import web.learning.system.repository.UserRepository;
@@ -28,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final AuthenticationManager authenticationManager;
@@ -35,19 +38,6 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
-
-    @Autowired
-    public UserServiceImpl(AuthenticationManager authenticationManager,
-                           UserRepository userRepository,
-                           RoleRepository roleRepository,
-                           PasswordEncoder passwordEncoder,
-                           JwtUtils jwtUtils) {
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtils = jwtUtils;
-    }
 
     @Override
     public JwtResponseDto login(LoginDto loginDto) {
@@ -72,7 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String registration(RegistrationDto registrationDto) throws ObjectNotFoundException {
+    public String registration(RegistrationDto registrationDto) {
         if (userRepository.existsByUsername(registrationDto.getUsername()))
             return "Ошибка: Данный пользователь уже зарегистрирован!";
 
@@ -86,12 +76,12 @@ public class UserServiceImpl implements UserService {
         switch (requestRole) {
             case "student":
                 Role roleStudent = roleRepository.findByName(ERole.ROLE_STUDENT)
-                        .orElseThrow(() -> new ObjectNotFoundException("Роль 'Ученик' не найдена"));
+                        .orElseThrow(() -> new GlobalException("Роль 'Ученик' не найдена", HttpStatus.BAD_REQUEST));
                 roles.add(roleStudent);
                 break;
             case "teacher":
                 Role roleTeacher = roleRepository.findByName(ERole.ROLE_TEACHER)
-                        .orElseThrow(() -> new ObjectNotFoundException("Роль 'Учитель' не найдена"));
+                        .orElseThrow(() -> new GlobalException("Роль 'Учитель' не найдена", HttpStatus.BAD_REQUEST));
                 roles.add(roleTeacher);
                 break;
         }
@@ -106,31 +96,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String addStudent(String username, Principal principal) throws ObjectNotFoundException {
+    public String addStudent(String username, UserDetails principal){
         User student = userRepository.findByUsername(username)
-                .orElseThrow(() ->new ObjectNotFoundException("Пользователя с логином: " + username + " не существует!"));
-        User teacher = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() ->new ObjectNotFoundException("Пользователя с логином: " + principal.getName() + " не существует!"));
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + username + " не существует!", HttpStatus.BAD_REQUEST));
+        User teacher = userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
         teacher.getStudents().add(student);
         userRepository.save(teacher);
         return "Ученик " + username + " успешно добавлен в группу";
     }
 
     @Override
-    public String deleteStudentFromGroup(String username, Principal principal) throws ObjectNotFoundException {
+    public String deleteStudentFromGroup(String username, UserDetails principal){
         User student = userRepository.findByUsername(username)
-                .orElseThrow(() ->new ObjectNotFoundException("Пользователя с логином: " + username + " не существует!"));
-        User teacher = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() ->new ObjectNotFoundException("Пользователя с логином: " + principal.getName() + " не существует!"));
-        teacher.getStudents().remove(student);
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + username + " не существует!", HttpStatus.BAD_REQUEST));
+        User teacher = userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
+        if (teacher.getStudents().contains(student))
+            teacher.getStudents().remove(student);
+        else
+            throw new GlobalException("Ученик " + username + " не состоит в вашей группе", HttpStatus.BAD_REQUEST);
         userRepository.save(teacher);
         return "Ученик " + username + " удален из группы";
     }
 
     @Override
-    public List<UserDto> getStudents(Principal principal) throws ObjectNotFoundException {
-        User teacher = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() ->new ObjectNotFoundException("Пользователя с логином: " + principal.getName() + " не существует!"));
+    public List<UserDto> getStudents(UserDetails principal){
+        User teacher = userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
         Set<User> students = teacher.getStudents();
         List<UserDto> studentsDto = new ArrayList<>();
         for (User student: students) {
@@ -141,16 +134,14 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<UserDto> getTeachers(Principal principal) throws ObjectNotFoundException {
-        User student = userRepository.findByUsername(principal.getName())
-                .orElseThrow(() ->new ObjectNotFoundException("Пользователя с логином: " + principal.getName() + " не существует!"));
+    public List<UserDto> getTeachers(UserDetails principal) {
+        User student = userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
         Set<User> teachers = student.getTeachers();
         List<UserDto> teachersDto = new ArrayList<>();
         for (User teacher: teachers) {
             teachersDto.add(UserMapper.toDto(teacher));
         }
         return teachersDto;
-
-
     }
 }
