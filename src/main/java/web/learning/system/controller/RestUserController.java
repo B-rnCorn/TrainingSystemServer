@@ -42,7 +42,7 @@ public class RestUserController {
     }
 
     @PreAuthorize("hasRole('TEACHER')")
-    @PostMapping("/delete_student")
+    @DeleteMapping("/delete_student")
     @ApiOperation(value = "Удалить ученика из группы (only для учителя)")
     public ResponseEntity<String> deleteStudent(@RequestParam String username) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
