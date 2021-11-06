@@ -4,14 +4,15 @@ package web.learning.system.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import web.learning.system.domain.User;
 import web.learning.system.dto.LoginDto;
 import web.learning.system.dto.RegistrationDto;
 import web.learning.system.exception.ObjectNotFoundException;
+import web.learning.system.repository.UserRepository;
 import web.learning.system.service.UserService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -37,4 +38,5 @@ public class RestAuthController {
     public ResponseEntity<?> authUser(@RequestBody LoginDto loginDto) {
         return new ResponseEntity<>(userService.login(loginDto), HttpStatus.OK);
     }
+
 }

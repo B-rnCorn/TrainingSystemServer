@@ -1,10 +1,16 @@
 package web.learning.system.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,7 +18,8 @@ import java.util.Set;
 @Table(name = "users")
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"roles", "tasks", "solutions"})
+@EqualsAndHashCode(of = { "id" })
+
 public class User {
 
     @Id
@@ -34,7 +41,9 @@ public class User {
         this.fio = fio;
     }
 
+
     @ManyToMany(fetch = FetchType.LAZY)
+    @JsonManagedReference
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -45,5 +54,23 @@ public class User {
 
     @OneToMany(mappedBy = "author")
     private Set<Solution> solutions = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "teacher_student",
+            joinColumns = @JoinColumn(name = "teacher_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    @JsonManagedReference
+    private Set<User> students = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "teacher_student",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "teacher_id")
+    )
+    @JsonBackReference
+    private Set<User> teachers = new HashSet<>();
 
 }

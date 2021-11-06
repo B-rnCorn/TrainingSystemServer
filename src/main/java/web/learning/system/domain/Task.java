@@ -1,7 +1,10 @@
 package web.learning.system.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -11,6 +14,7 @@ import java.util.Set;
 @Table(name = "task")
 @Entity
 @Data
+@EqualsAndHashCode(of = { "id" })
 public class Task {
 
     @Id
@@ -27,7 +31,6 @@ public class Task {
     private String map;
 
     @Column(name = "created_date")
-    @CreatedDate
     private LocalDateTime date;
 
     @Column(name = "is_published")

@@ -1,16 +1,19 @@
 package web.learning.system.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 @Table(name = "solution")
 @Entity
 @Data
+@EqualsAndHashCode(of = { "id" })
 public class Solution {
 
     @Id
@@ -24,7 +27,6 @@ public class Solution {
     private Integer mark;
 
     @Column(name = "created_date")
-    @CreatedDate
     private LocalDateTime date;
 
     @Column(name = "is_send")

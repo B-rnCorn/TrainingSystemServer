@@ -1,6 +1,9 @@
 package web.learning.system.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -10,7 +13,7 @@ import java.util.Set;
 @Table(name = "role")
 @Entity
 @Data
-@EqualsAndHashCode(exclude = {"users"})
+@EqualsAndHashCode(of = { "id" })
 public class Role {
 
     @Id
@@ -22,6 +25,6 @@ public class Role {
     private ERole name;
 
     @ManyToMany(mappedBy = "roles")
-    @JsonIgnore
+    @JsonBackReference
     private Set<User> users;
 }

@@ -9,7 +9,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE role (
-                        "id" int   NOT NULL
+                        "id" serial   NOT NULL
                                 CONSTRAINT role_pk PRIMARY KEY,
                         "name" varchar(20)   NOT NULL
 
@@ -24,8 +24,17 @@ CREATE TABLE user_role (
                                  PRIMARY KEY(user_id, role_id)
 );
 
+CREATE TABLE teacher_student (
+                           "teacher_id" int   NOT NULL
+                               CONSTRAINT teacher_student_fk0 REFERENCES users,
+                           "student_id" int   NOT NULL
+                               CONSTRAINT teacher_student_fk1 REFERENCES role,
+                           CONSTRAINT teacher_student_pk
+                               PRIMARY KEY(teacher_id, student_id)
+);
+
 CREATE TABLE task (
-                        "id" int   NOT NULL
+                        "id" serial   NOT NULL
                                     CONSTRAINT task_pk PRIMARY KEY,
                         "title" varchar(64)   NOT NULL,
                         "description" varchar(256)   NOT NULL,
@@ -38,7 +47,7 @@ CREATE TABLE task (
 );
 
 CREATE TABLE solution (
-                            "id" int   NOT NULL,
+                            "id" serial   NOT NULL,
                             "algorithm" text   NOT NULL,
                             "mark" int   NULL,
                             "created_date" timestamp   NOT NULL,
