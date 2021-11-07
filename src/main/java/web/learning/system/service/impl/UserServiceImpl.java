@@ -74,12 +74,12 @@ public class UserServiceImpl implements UserService {
         Set<Role> roles = new HashSet<>();
 
         switch (requestRole) {
-            case "student":
+            case "ROLE_STUDENT":
                 Role roleStudent = roleRepository.findByName(ERole.ROLE_STUDENT)
                         .orElseThrow(() -> new GlobalException("Роль 'Ученик' не найдена", HttpStatus.BAD_REQUEST));
                 roles.add(roleStudent);
                 break;
-            case "teacher":
+            case "ROLE_TEACHER":
                 Role roleTeacher = roleRepository.findByName(ERole.ROLE_TEACHER)
                         .orElseThrow(() -> new GlobalException("Роль 'Учитель' не найдена", HttpStatus.BAD_REQUEST));
                 roles.add(roleTeacher);
