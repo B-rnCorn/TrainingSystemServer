@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import web.learning.system.domain.User;
+import web.learning.system.dto.MessageResponse;
 import web.learning.system.dto.UserDto;
 import web.learning.system.service.UserService;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/user")
 @Api(value = "", tags = {"Работа с учениками и учителями"})
+@CrossOrigin(maxAge = 3600)
 public class RestUserController {
 
     private final UserService userService;
@@ -36,7 +38,7 @@ public class RestUserController {
     @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/add_student")
     @ApiOperation(value = "Добавить ученика в группу (only для учителя)")
-    public ResponseEntity<String> addStudent(@RequestParam String username) {
+    public ResponseEntity<MessageResponse> addStudent(@RequestParam String username) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<>(userService.addStudent(username, principal), HttpStatus.OK);
     }
@@ -44,7 +46,7 @@ public class RestUserController {
     @PreAuthorize("hasRole('TEACHER')")
     @DeleteMapping("/delete_student")
     @ApiOperation(value = "Удалить ученика из группы (only для учителя)")
-    public ResponseEntity<String> deleteStudent(@RequestParam String username) {
+    public ResponseEntity<MessageResponse> deleteStudent(@RequestParam String username) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<>(userService.deleteStudentFromGroup(username, principal), HttpStatus.OK);
     }

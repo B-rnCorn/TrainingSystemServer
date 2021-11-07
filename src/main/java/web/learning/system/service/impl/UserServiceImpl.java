@@ -62,9 +62,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String registration(RegistrationDto registrationDto) {
+    public MessageResponse registration(RegistrationDto registrationDto) {
         if (userRepository.existsByUsername(registrationDto.getUsername()))
-            return "Ошибка: Данный пользователь уже зарегистрирован!";
+            throw new GlobalException("Ошибка: Данный пользователь уже зарегистрирован!", HttpStatus.BAD_REQUEST);
 
         User user = new User(registrationDto.getUsername(),
                 passwordEncoder.encode(registrationDto.getPassword()),
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setRoles(roles);
         userRepository.save(user);
-        return "Пользователь " + user.getUsername() + " успешно зарегистрирован!";
+        return new MessageResponse("Пользователь " + user.getUsername() + " успешно зарегистрирован!");
     }
 
     @Override
@@ -96,18 +96,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String addStudent(String username, UserDetails principal){
+    public MessageResponse addStudent(String username, UserDetails principal){
         User student = userRepository.findByUsername(username)
                 .orElseThrow(() -> new GlobalException("Пользователя с логином: " + username + " не существует!", HttpStatus.BAD_REQUEST));
         User teacher = userRepository.findByUsername(principal.getUsername())
                 .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
         teacher.getStudents().add(student);
         userRepository.save(teacher);
-        return "Ученик " + username + " успешно добавлен в группу";
+        return new MessageResponse("Ученик " + username + " успешно добавлен в группу");
     }
 
     @Override
-    public String deleteStudentFromGroup(String username, UserDetails principal){
+    public MessageResponse deleteStudentFromGroup(String username, UserDetails principal){
         User student = userRepository.findByUsername(username)
                 .orElseThrow(() -> new GlobalException("Пользователя с логином: " + username + " не существует!", HttpStatus.BAD_REQUEST));
         User teacher = userRepository.findByUsername(principal.getUsername())
@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
         else
             throw new GlobalException("Ученик " + username + " не состоит в вашей группе", HttpStatus.BAD_REQUEST);
         userRepository.save(teacher);
-        return "Ученик " + username + " удален из группы";
+        return new MessageResponse("Ученик " + username + " удален из группы");
     }
 
     @Override
