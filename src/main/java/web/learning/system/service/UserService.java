@@ -22,4 +22,6 @@ public interface UserService {
 
     MessageResponse deleteStudentFromGroup(String username, UserDetails principal);
 
+    List<User> getStudentsWithoutGroup(UserDetails principal);
+
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import web.learning.system.domain.User;
 import web.learning.system.dto.MessageResponse;
 import web.learning.system.dto.UserDto;
+import web.learning.system.mapper.UserMapper;
 import web.learning.system.service.UserService;
 
 import java.util.List;
@@ -29,14 +30,16 @@ public class RestUserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @GetMapping
-    @ApiOperation(value = "Получить всех пользователей")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
+    @ApiOperation(value = "Получить всех учеников, которые не состоят в группе")
+    public ResponseEntity<List<UserDto>> getAllStudentsWithoutGroup() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<>(UserMapper.toUserDtoList(userService.getStudentsWithoutGroup(principal)), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('TEACHER')")
-    @PostMapping("/add_student")
+    @GetMapping("/add_student")
     @ApiOperation(value = "Добавить ученика в группу (only для учителя)")
     public ResponseEntity<MessageResponse> addStudent(@RequestParam String username) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

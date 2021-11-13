@@ -91,6 +91,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getStudentsWithoutGroup(UserDetails principal) {
+        User teacher = userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
+        Role role = roleRepository.findByName(ERole.ROLE_TEACHER)
+                .orElseThrow(() -> new GlobalException("Роль 'Учитель' не найдена", HttpStatus.BAD_REQUEST));
+        return userRepository.findAll().stream().filter(
+                user -> !user.getRoles().contains(role) && !user.getTeachers().contains(teacher)
+        ).collect(Collectors.toList());
+    }
+
+    @Override
     public List<User> findAll() {
         return userRepository.findAll();
     }

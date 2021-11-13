@@ -28,7 +28,7 @@ CREATE TABLE teacher_student (
                            "teacher_id" int   NOT NULL
                                CONSTRAINT teacher_student_fk0 REFERENCES users,
                            "student_id" int   NOT NULL
-                               CONSTRAINT teacher_student_fk1 REFERENCES role,
+                               CONSTRAINT teacher_student_fk1 REFERENCES users,
                            CONSTRAINT teacher_student_pk
                                PRIMARY KEY(teacher_id, student_id)
 );
