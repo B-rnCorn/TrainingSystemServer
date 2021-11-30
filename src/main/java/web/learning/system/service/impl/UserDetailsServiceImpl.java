@@ -1,11 +1,12 @@
 package web.learning.system.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import web.learning.system.domain.User;
+import web.learning.system.exception.GlobalException;
 import web.learning.system.repository.UserRepository;
 
 import javax.transaction.Transactional;
@@ -22,9 +23,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+    public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Не найден пользователь с логином: " + username));
+                .orElseThrow(() -> new GlobalException("Пользователь с логином: " + username + " не найден", HttpStatus.BAD_REQUEST));
         return UserDetailsImpl.build(user);
     }
 }
