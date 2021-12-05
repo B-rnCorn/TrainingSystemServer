@@ -9,8 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import web.learning.system.domain.User;
 import web.learning.system.dto.MessageResponse;
+import web.learning.system.dto.StudentMarksDto;
 import web.learning.system.dto.UserDto;
 import web.learning.system.mapper.UserMapper;
 import web.learning.system.service.UserService;
@@ -68,6 +68,13 @@ public class RestUserController {
     public ResponseEntity<List<UserDto>> getTeachers() {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<>(userService.getTeachers(principal), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('TEACHER')")
+    @GetMapping("/marks")
+    public ResponseEntity<List<StudentMarksDto>> getStudentMarks() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<>(userService.getStudentMarks(principal), HttpStatus.OK);
     }
 
 }

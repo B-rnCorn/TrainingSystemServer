@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import web.learning.system.config.jwt.JwtUtils;
 import web.learning.system.domain.ERole;
 import web.learning.system.domain.Role;
+import web.learning.system.domain.Solution;
 import web.learning.system.domain.User;
 import web.learning.system.dto.*;
 import web.learning.system.exception.GlobalException;
@@ -22,7 +23,6 @@ import web.learning.system.repository.RoleRepository;
 import web.learning.system.repository.UserRepository;
 import web.learning.system.service.UserService;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -154,5 +154,23 @@ public class UserServiceImpl implements UserService {
             teachersDto.add(UserMapper.toDto(teacher));
         }
         return teachersDto;
+    }
+
+    @Override
+    public List<StudentMarksDto> getStudentMarks(UserDetails principal) {
+        User teacher = userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
+        List<User> students  = teacher.getStudents().stream()
+                .filter((user -> user.getTeachers().contains(teacher)))
+                .collect(Collectors.toList());
+        List<StudentMarksDto> studentMarksDtoList = new ArrayList<>();
+        for (User student: students) {
+            List<Integer> marks = student.getSolutions().stream()
+                    .map(Solution::getMark)
+                    .collect(Collectors.toList());
+            studentMarksDtoList.add(new StudentMarksDto(student.getUsername(), student.getFio(), marks));
+        }
+
+        return studentMarksDtoList;
     }
 }

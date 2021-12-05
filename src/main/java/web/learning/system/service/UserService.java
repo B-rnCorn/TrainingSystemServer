@@ -24,4 +24,6 @@ public interface UserService {
 
     List<User> getStudentsWithoutGroup(UserDetails principal);
 
+    List<StudentMarksDto> getStudentMarks(UserDetails principal);
+
 }

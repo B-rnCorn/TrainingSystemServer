@@ -33,4 +33,13 @@ public class SolutionServiceImpl implements SolutionService {
                 .collect(Collectors.toList());
 
     }
+
+    @Override
+    public List<Solution> getAllStudentSolutions(UserDetails principal) {
+        return solutionRepository.findAll().stream()
+                .filter(solution -> solution.getAuthor()
+                        .equals(userRepository.findByUsername(principal.getUsername())
+                        .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST))))
+                .collect(Collectors.toList());
+    }
 }

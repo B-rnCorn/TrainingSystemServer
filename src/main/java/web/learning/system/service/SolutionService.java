@@ -9,4 +9,5 @@ import java.util.Set;
 public interface SolutionService {
 
     List<Solution> getSolutionByStudent(String username, UserDetails principal);
+    List<Solution> getAllStudentSolutions(UserDetails principal);
 }

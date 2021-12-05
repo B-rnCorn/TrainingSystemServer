@@ -3,6 +3,7 @@ package web.learning.system.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,14 @@ public class RestSolutionController {
     public ResponseEntity<List<SolutionDto>> getStudentSolutions(@RequestParam String username) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Solution> solutions = solutionService.getSolutionByStudent(username, principal);
+        return new ResponseEntity<>(SolutionMapper.toSolutionDtoList(solutions), HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<SolutionDto>> getAllStudentSolutionsForStudent() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<Solution> solutions = solutionService.getAllStudentSolutions(principal);
         return new ResponseEntity<>(SolutionMapper.toSolutionDtoList(solutions), HttpStatus.OK);
     }
 
