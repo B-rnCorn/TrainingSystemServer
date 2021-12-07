@@ -166,6 +166,7 @@ public class UserServiceImpl implements UserService {
         List<StudentMarksDto> studentMarksDtoList = new ArrayList<>();
         for (User student: students) {
             List<Integer> marks = student.getSolutions().stream()
+                    .filter(solution -> solution.getTask().getAuthor().equals(teacher))
                     .map(Solution::getMark)
                     .collect(Collectors.toList());
             studentMarksDtoList.add(new StudentMarksDto(student.getUsername(), student.getFio(), marks));
