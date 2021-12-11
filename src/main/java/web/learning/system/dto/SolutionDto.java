@@ -17,7 +17,7 @@ public class SolutionDto {
     private String title;
     private String algorithm;
     private Integer mark;
-    private LocalDateTime createdDate;
+    private String date;
     private Boolean isSend;
     private UserDto user;
     private TaskDto task;

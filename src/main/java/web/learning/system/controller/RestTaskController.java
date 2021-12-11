@@ -14,6 +14,7 @@ import web.learning.system.domain.User;
 import web.learning.system.dto.MessageResponse;
 import web.learning.system.dto.TaskCreationDto;
 import web.learning.system.dto.TaskDto;
+import web.learning.system.dto.TaskStudentDto;
 import web.learning.system.exception.GlobalException;
 import web.learning.system.mapper.TaskCreationMapper;
 import web.learning.system.mapper.TaskMapper;
@@ -67,5 +68,13 @@ public class RestTaskController {
     @ApiOperation(value = "Удалить задание по id")
     public ResponseEntity<MessageResponse> deleteById(@PathVariable Integer id) {
         return new ResponseEntity<>(taskService.deleteById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/student")
+    @PreAuthorize("hasRole('STUDENT')")
+    @ApiOperation(value = "Получить все задания ученика и решения к ним, если они есть")
+    public ResponseEntity<List<TaskStudentDto>> getStudentTaskForStudent() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<>(taskService.getStudentTask(principal), HttpStatus.OK);
     }
 }

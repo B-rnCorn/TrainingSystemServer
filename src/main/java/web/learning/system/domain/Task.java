@@ -53,4 +53,16 @@ public class Task {
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private Set<Solution> solutions;
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", map='" + map + '\'' +
+                ", date=" + date +
+                ", isPublished=" + isPublished +
+                '}';
+    }
 }

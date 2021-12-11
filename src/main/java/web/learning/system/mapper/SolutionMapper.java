@@ -5,14 +5,20 @@ import web.learning.system.domain.User;
 import web.learning.system.dto.SolutionDto;
 import web.learning.system.dto.UserDto;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SolutionMapper {
 
     public static SolutionDto toDto(Solution solution) {
+        LocalDateTime date = solution.getDate();
+        int day = date.getDayOfMonth();
+        int month = date.getMonthValue();
+        int year = date.getYear();
+        String newFormatDate = day + "/" +  month + "/" + year;
         return new SolutionDto(solution.getId(), solution.getTask().getTitle(),
-                solution.getAlgorithm(), solution.getMark(), solution.getDate(), solution.getIsSend(),
+                solution.getAlgorithm(), solution.getMark(), newFormatDate, solution.getIsSend(),
                 UserMapper.toDto(solution.getAuthor()), TaskMapper.toDto(solution.getTask()));
     }
 

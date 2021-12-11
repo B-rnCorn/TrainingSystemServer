@@ -69,4 +69,13 @@ public class User {
     @JsonBackReference
     private Set<User> teachers = new HashSet<>();
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", fio='" + fio + '\'' +
+                '}';
+    }
 }
