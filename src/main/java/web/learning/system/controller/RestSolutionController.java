@@ -1,5 +1,6 @@
 package web.learning.system.controller;
 
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/solution")
+@Api(value = "", tags = {"Работа с решениями"})
 @CrossOrigin(maxAge = 3600)
 public class RestSolutionController {
 

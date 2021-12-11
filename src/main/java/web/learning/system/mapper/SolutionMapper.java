@@ -12,7 +12,8 @@ public class SolutionMapper {
 
     public static SolutionDto toDto(Solution solution) {
         return new SolutionDto(solution.getId(), solution.getTask().getTitle(),
-                solution.getAlgorithm(), solution.getMark(), solution.getDate(), solution.getIsSend());
+                solution.getAlgorithm(), solution.getMark(), solution.getDate(), solution.getIsSend(),
+                UserMapper.toDto(solution.getAuthor()), TaskMapper.toDto(solution.getTask()));
     }
 
     public static List<SolutionDto> toSolutionDtoList(List<Solution> solutions) {

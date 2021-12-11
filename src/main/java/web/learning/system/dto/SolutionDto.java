@@ -19,4 +19,6 @@ public class SolutionDto {
     private Integer mark;
     private LocalDateTime createdDate;
     private Boolean isSend;
+    private UserDto user;
+    private TaskDto task;
 }
