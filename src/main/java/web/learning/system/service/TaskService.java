@@ -4,6 +4,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import web.learning.system.domain.Task;
 import web.learning.system.dto.MessageResponse;
 import web.learning.system.dto.TaskStudentDto;
+import web.learning.system.dto.TaskUpdateDto;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface TaskService {
     MessageResponse deleteById(Integer id);
 
     List<TaskStudentDto> getStudentTask(UserDetails principal);
+
+    MessageResponse update(TaskUpdateDto taskUpdateDto);
 }

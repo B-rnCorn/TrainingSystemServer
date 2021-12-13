@@ -10,6 +10,7 @@ import web.learning.system.domain.User;
 import web.learning.system.dto.MessageResponse;
 import web.learning.system.dto.TaskDto;
 import web.learning.system.dto.TaskStudentDto;
+import web.learning.system.dto.TaskUpdateDto;
 import web.learning.system.exception.GlobalException;
 import web.learning.system.mapper.SolutionMapper;
 import web.learning.system.mapper.TaskMapper;
@@ -85,5 +86,16 @@ public class TaskServiceImpl implements TaskService {
             }
         }
         return tasksStudentDto;
+    }
+
+    @Override
+    public MessageResponse update(TaskUpdateDto taskUpdateDto) {
+        Task task = taskRepository.findById(taskUpdateDto.getId())
+                .orElseThrow(() -> new GlobalException("Задания с id: " + taskUpdateDto.getId() + " не существует", HttpStatus.BAD_REQUEST));
+        task.setTitle(taskUpdateDto.getTitle());
+        task.setDescription(taskUpdateDto.getDescription());
+        task.setMap(taskUpdateDto.getMap());
+        taskRepository.save(task);
+        return new MessageResponse("Задание успешно изменено");
     }
 }
