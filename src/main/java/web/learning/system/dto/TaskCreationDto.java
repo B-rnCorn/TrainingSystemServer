@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class TaskCreationDto {
-    String title;
-    String description;
-    String map;
+    private String title;
+    private String description;
+    private String map;
+    private String isPublished;
 }
