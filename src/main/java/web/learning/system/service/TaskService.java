@@ -23,4 +23,6 @@ public interface TaskService {
     List<TaskStudentDto> getStudentTask(UserDetails principal);
 
     MessageResponse update(TaskUpdateDto taskUpdateDto);
+
+    MessageResponse publishTask(Integer id);
 }

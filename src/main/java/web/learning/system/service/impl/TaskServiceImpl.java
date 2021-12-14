@@ -71,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
         List<TaskStudentDto> tasksStudentDto = new ArrayList<>();
         List<Task> studentTasks = tasks
                 .stream()
-                .filter(task -> task.getAuthor().getStudents().contains(student))
+                .filter(task -> task.getAuthor().getStudents().contains(student) && task.getIsPublished())
                 .collect(Collectors.toList());
         for (Task task: studentTasks) {
             Solution newSolution = null;
@@ -97,5 +97,14 @@ public class TaskServiceImpl implements TaskService {
         task.setMap(taskUpdateDto.getMap());
         taskRepository.save(task);
         return new MessageResponse("Задание успешно изменено");
+    }
+
+    @Override
+    public MessageResponse publishTask(Integer id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new GlobalException("Задания с id: " + id + " не существует", HttpStatus.BAD_REQUEST));
+        task.setIsPublished(true);
+        taskRepository.save(task);
+        return new MessageResponse("Задание успешно опубликовано");
     }
 }

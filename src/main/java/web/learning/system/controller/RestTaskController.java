@@ -80,4 +80,10 @@ public class RestTaskController {
     public ResponseEntity<MessageResponse> updateTask(@RequestBody TaskUpdateDto taskUpdateDto) {
         return new ResponseEntity<>(taskService.update(taskUpdateDto), HttpStatus.OK);
     }
+
+    @PostMapping("/publish/{id}")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<MessageResponse> publishTask(@PathVariable Integer id) {
+        return new ResponseEntity<>(taskService.publishTask(id), HttpStatus.OK);
+    }
 }
