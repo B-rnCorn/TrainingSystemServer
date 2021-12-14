@@ -7,5 +7,5 @@ public class TaskCreationDto {
     private String title;
     private String description;
     private String map;
-    private String isPublished;
+    private Boolean isPublished;
 }

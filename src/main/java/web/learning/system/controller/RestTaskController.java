@@ -35,12 +35,10 @@ public class RestTaskController {
     @PreAuthorize("hasRole('TEACHER')")
     @ApiOperation(value = "Сохранить задание")
     public ResponseEntity<MessageResponse> saveTask(@RequestBody TaskCreationDto taskCreationDto) {
-        boolean isPublished;
-        isPublished = taskCreationDto.getIsPublished() != null;
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User author = userRepository.findByUsername(principal.getUsername())
                     .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
-        Task task = TaskCreationMapper.toTask(taskCreationDto, author, isPublished);
+        Task task = TaskCreationMapper.toTask(taskCreationDto, author);
         return new ResponseEntity<>(taskService.save(task), HttpStatus.OK);
     }
 

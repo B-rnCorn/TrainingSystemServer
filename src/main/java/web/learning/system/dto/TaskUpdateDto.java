@@ -8,4 +8,5 @@ public class TaskUpdateDto {
     private String title;
     private String description;
     private String map;
+    private Boolean isPublished;
 }

@@ -95,6 +95,7 @@ public class TaskServiceImpl implements TaskService {
         task.setTitle(taskUpdateDto.getTitle());
         task.setDescription(taskUpdateDto.getDescription());
         task.setMap(taskUpdateDto.getMap());
+        task.setIsPublished(taskUpdateDto.getIsPublished());
         taskRepository.save(task);
         return new MessageResponse("Задание успешно изменено");
     }
