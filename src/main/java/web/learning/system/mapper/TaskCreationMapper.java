@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 public class TaskCreationMapper {
 
-    public static Task toTask(TaskCreationDto taskCreationDto, User author, boolean isPublished) {
+    public static Task toTask(TaskCreationDto taskCreationDto, User author) {
         return new Task(taskCreationDto.getTitle(), taskCreationDto.getDescription(), taskCreationDto.getMap(),
                 LocalDateTime.now(), taskCreationDto.getIsPublished(), author);
     }
