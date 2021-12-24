@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -14,7 +15,17 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @EqualsAndHashCode(of = { "id" })
+@NoArgsConstructor
 public class Solution {
+
+    public Solution(String algorithm, Integer mark, LocalDateTime date, Boolean isSend, User author, Task task) {
+        this.algorithm = algorithm;
+        this.mark = mark;
+        this.date = date;
+        this.isSend = isSend;
+        this.author = author;
+        this.task = task;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

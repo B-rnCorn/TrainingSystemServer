@@ -9,8 +9,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import web.learning.system.domain.Solution;
+import web.learning.system.domain.Task;
+import web.learning.system.domain.User;
+import web.learning.system.dto.MessageResponse;
+import web.learning.system.dto.SolutionCreationDto;
 import web.learning.system.dto.SolutionDto;
+import web.learning.system.dto.SolutionUpdateDto;
+import web.learning.system.exception.GlobalException;
+import web.learning.system.mapper.SolutionCreationMapper;
 import web.learning.system.mapper.SolutionMapper;
+import web.learning.system.repository.TaskRepository;
+import web.learning.system.repository.UserRepository;
 import web.learning.system.service.SolutionService;
 
 import java.util.List;
@@ -23,6 +32,8 @@ import java.util.List;
 public class RestSolutionController {
 
     private final SolutionService solutionService;
+    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     @GetMapping("/student")
     public ResponseEntity<List<SolutionDto>> getStudentSolutions(@RequestParam String username) {
@@ -39,4 +50,20 @@ public class RestSolutionController {
         return new ResponseEntity<>(SolutionMapper.toSolutionDtoList(solutions), HttpStatus.OK);
     }
 
+    @PostMapping("/save")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<MessageResponse> saveSolution(@RequestBody SolutionCreationDto solutionCreationDto) {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Task task = taskRepository.findById(solutionCreationDto.getTaskId())
+                .orElseThrow(() -> new GlobalException("Задания с id: " + solutionCreationDto.getTaskId() + " не существует!", HttpStatus.BAD_REQUEST));
+        User author = userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
+        return new ResponseEntity<>(solutionService.save(SolutionCreationMapper.toSolution(solutionCreationDto, author, task)), HttpStatus.OK);
+    }
+
+    @PostMapping("/update")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<MessageResponse> updateSolution(@RequestBody SolutionUpdateDto solutionUpdateDto) {
+        return new ResponseEntity<>(solutionService.update(solutionUpdateDto), HttpStatus.OK);
+    }
 }

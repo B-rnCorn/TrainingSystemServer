@@ -5,12 +5,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import web.learning.system.domain.Solution;
+import web.learning.system.domain.Task;
 import web.learning.system.domain.User;
+import web.learning.system.dto.MessageResponse;
+import web.learning.system.dto.SolutionUpdateDto;
 import web.learning.system.exception.GlobalException;
 import web.learning.system.repository.SolutionRepository;
 import web.learning.system.repository.UserRepository;
 import web.learning.system.service.SolutionService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,5 +45,22 @@ public class SolutionServiceImpl implements SolutionService {
                         .equals(userRepository.findByUsername(principal.getUsername())
                         .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST))))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public MessageResponse save(Solution solution) {
+        solutionRepository.save(solution);
+        return new MessageResponse("Решение успешно сохранено");
+    }
+
+    @Override
+    public MessageResponse update(SolutionUpdateDto solutionUpdateDto) {
+        Solution solution = solutionRepository.findById(solutionUpdateDto.getId())
+                .orElseThrow(() -> new GlobalException("Решения с id: " + solutionUpdateDto.getId() + " не существует!", HttpStatus.BAD_REQUEST));
+        solution.setAlgorithm(solutionUpdateDto.getAlgorithm());
+        solution.setDate(LocalDateTime.now());
+        solution.setIsSend(solutionUpdateDto.getIsSend());
+        solutionRepository.save(solution);
+        return new MessageResponse("Решение успешно изменено");
     }
 }
