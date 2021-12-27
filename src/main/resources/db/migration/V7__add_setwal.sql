@@ -1,1 +1,1 @@
-SELECT setval('task_id_seq', (select max(id) from task));
+-- SELECT setval('task_id_seq', (select max(id) from task));

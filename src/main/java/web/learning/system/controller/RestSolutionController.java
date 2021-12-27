@@ -66,4 +66,11 @@ public class RestSolutionController {
     public ResponseEntity<MessageResponse> updateSolution(@RequestBody SolutionUpdateDto solutionUpdateDto) {
         return new ResponseEntity<>(solutionService.update(solutionUpdateDto), HttpStatus.OK);
     }
+
+    @GetMapping("getSolution")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<List<SolutionDto>> getStudentSolutionsByTeacher(@RequestParam Integer taskId) {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ResponseEntity<>(SolutionMapper.toSolutionDtoList(solutionService.getAllStudentSolutionByTeacher(taskId, principal)), HttpStatus.OK);
+    }
 }

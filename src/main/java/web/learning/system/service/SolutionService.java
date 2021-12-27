@@ -16,4 +16,5 @@ public interface SolutionService {
     List<Solution> getAllStudentSolutions(UserDetails principal);
     MessageResponse save(Solution solution);
     MessageResponse update(SolutionUpdateDto solutionUpdateDto);
+    List<Solution> getAllStudentSolutionByTeacher(Integer taskId, UserDetails principal);
 }

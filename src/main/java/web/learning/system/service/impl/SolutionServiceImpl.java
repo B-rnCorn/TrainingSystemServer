@@ -11,6 +11,7 @@ import web.learning.system.dto.MessageResponse;
 import web.learning.system.dto.SolutionUpdateDto;
 import web.learning.system.exception.GlobalException;
 import web.learning.system.repository.SolutionRepository;
+import web.learning.system.repository.TaskRepository;
 import web.learning.system.repository.UserRepository;
 import web.learning.system.service.SolutionService;
 
@@ -25,6 +26,7 @@ public class SolutionServiceImpl implements SolutionService {
 
     private final SolutionRepository solutionRepository;
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
 
     @Override
     public List<Solution> getSolutionByStudent(String username, UserDetails principal) {
@@ -62,5 +64,16 @@ public class SolutionServiceImpl implements SolutionService {
         solution.setIsSend(solutionUpdateDto.getIsSend());
         solutionRepository.save(solution);
         return new MessageResponse("Решение успешно изменено");
+    }
+
+    @Override
+    public List<Solution> getAllStudentSolutionByTeacher(Integer taskId, UserDetails principal) {
+        User teacher = userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new GlobalException("Пользователя с логином: " + principal.getUsername() + " не существует!", HttpStatus.BAD_REQUEST));
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new GlobalException("Задания с id: " + taskId + " не существует!", HttpStatus.BAD_REQUEST));
+        return solutionRepository.findAll().stream()
+                .filter(solution -> solution.getTask().getAuthor().equals(teacher) && solution.getTask().equals(task))
+                .collect(Collectors.toList());
     }
 }
