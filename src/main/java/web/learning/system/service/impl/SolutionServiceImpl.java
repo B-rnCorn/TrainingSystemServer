@@ -73,7 +73,17 @@ public class SolutionServiceImpl implements SolutionService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new GlobalException("Задания с id: " + taskId + " не существует!", HttpStatus.BAD_REQUEST));
         return solutionRepository.findAll().stream()
-                .filter(solution -> solution.getTask().getAuthor().equals(teacher) && solution.getTask().equals(task))
+                .filter(solution -> solution.getTask().getAuthor().equals(teacher) && solution.getTask().equals(task) && solution.getIsSend().equals(true))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public MessageResponse setMark(Integer solutionId, Integer mark) {
+        Solution solution = solutionRepository.findById(solutionId)
+                .orElseThrow(() -> new GlobalException("Решения с id: " + solutionId + " не существует!", HttpStatus.BAD_REQUEST));
+        solution.setMark(mark);
+        solutionRepository.save(solution);
+        return new MessageResponse("Вы поставили оценку: " + mark);
+
     }
 }

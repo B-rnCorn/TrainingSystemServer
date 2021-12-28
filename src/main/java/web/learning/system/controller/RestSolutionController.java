@@ -67,10 +67,16 @@ public class RestSolutionController {
         return new ResponseEntity<>(solutionService.update(solutionUpdateDto), HttpStatus.OK);
     }
 
-    @GetMapping("getSolution")
+    @GetMapping("/getSolution")
     @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<List<SolutionDto>> getStudentSolutionsByTeacher(@RequestParam Integer taskId) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return new ResponseEntity<>(SolutionMapper.toSolutionDtoList(solutionService.getAllStudentSolutionByTeacher(taskId, principal)), HttpStatus.OK);
+    }
+
+    @GetMapping("/setMark")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<MessageResponse> setMark(@RequestParam Integer solutionId, @RequestParam Integer mark) {
+        return new ResponseEntity<>(solutionService.setMark(solutionId, mark), HttpStatus.OK);
     }
 }
