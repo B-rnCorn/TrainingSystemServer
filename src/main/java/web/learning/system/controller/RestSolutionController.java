@@ -11,19 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import web.learning.system.domain.Solution;
 import web.learning.system.domain.Task;
 import web.learning.system.domain.User;
-import web.learning.system.dto.MessageResponse;
-import web.learning.system.dto.SolutionCreationDto;
-import web.learning.system.dto.SolutionDto;
-import web.learning.system.dto.SolutionUpdateDto;
+import web.learning.system.dto.*;
 import web.learning.system.exception.GlobalException;
 import web.learning.system.mapper.SolutionCreationMapper;
 import web.learning.system.mapper.SolutionMapper;
+import web.learning.system.mapper.UserMapper;
 import web.learning.system.repository.SolutionRepository;
 import web.learning.system.repository.TaskRepository;
 import web.learning.system.repository.UserRepository;
 import web.learning.system.service.SolutionService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -69,11 +68,14 @@ public class RestSolutionController {
         return new ResponseEntity<>(solutionService.update(solutionUpdateDto), HttpStatus.OK);
     }
 
-    @GetMapping("/getSolution")
+    @GetMapping("/getUsers")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<List<SolutionDto>> getStudentSolutionsByTeacher(@RequestParam Integer taskId) {
+    public ResponseEntity<List<UserDto>> getStudentSolutionsByTeacher(@RequestParam Integer taskId) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<>(SolutionMapper.toSolutionDtoList(solutionService.getAllStudentSolutionByTeacher(taskId, principal)), HttpStatus.OK);
+        List<User> users = solutionService.getAllStudentSolutionByTeacher(taskId, principal)
+                .stream().map(solution -> solution.getAuthor())
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(UserMapper.toUserDtoList(users), HttpStatus.OK);
     }
 
     @GetMapping("/setMark")
@@ -83,10 +85,16 @@ public class RestSolutionController {
     }
 
     @GetMapping("/getStudentSol")
-    public ResponseEntity<SolutionDto> getSolutionByIdAndTask(Integer userId, Integer taskId) {
+    public ResponseEntity<SolutionDto> getSolutionByIdAndTask(@RequestParam Integer userId, @RequestParam Integer taskId) {
         Solution solution = solutionRepository.findAll()
                 .stream().filter(s -> s.getTask().getId().equals(taskId) && s.getAuthor().getId().equals(userId) && s.getIsSend().equals(true))
                 .findAny().get();
         return new ResponseEntity<>(SolutionMapper.toDto(solution), HttpStatus.OK);
     }
+
+//    @GetMapping("/getStudent")
+//    public ResponseEntity<List<UserDto>> getUserList(Integer taskId) {
+//        List<User> user = userRepository.findAll()
+//                .stream().filter(user -> user.getSolutions().contains())
+//    }
 }
