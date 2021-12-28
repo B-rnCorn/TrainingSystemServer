@@ -18,6 +18,7 @@ import web.learning.system.dto.SolutionUpdateDto;
 import web.learning.system.exception.GlobalException;
 import web.learning.system.mapper.SolutionCreationMapper;
 import web.learning.system.mapper.SolutionMapper;
+import web.learning.system.repository.SolutionRepository;
 import web.learning.system.repository.TaskRepository;
 import web.learning.system.repository.UserRepository;
 import web.learning.system.service.SolutionService;
@@ -34,6 +35,7 @@ public class RestSolutionController {
     private final SolutionService solutionService;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final SolutionRepository solutionRepository;
 
     @GetMapping("/student")
     public ResponseEntity<List<SolutionDto>> getStudentSolutions(@RequestParam String username) {
@@ -78,5 +80,13 @@ public class RestSolutionController {
     @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<MessageResponse> setMark(@RequestParam Integer solutionId, @RequestParam Integer mark) {
         return new ResponseEntity<>(solutionService.setMark(solutionId, mark), HttpStatus.OK);
+    }
+
+    @GetMapping("/getStudentSol")
+    public ResponseEntity<SolutionDto> getSolutionByIdAndTask(Integer userId, Integer taskId) {
+        Solution solution = solutionRepository.findAll()
+                .stream().filter(s -> s.getTask().getId().equals(taskId) && s.getAuthor().getId().equals(userId) && s.getIsSend().equals(true))
+                .findAny().get();
+        return new ResponseEntity<>(SolutionMapper.toDto(solution), HttpStatus.OK);
     }
 }
